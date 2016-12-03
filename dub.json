@@ -1,0 +1,9 @@
+{
+  "name": "tmpl8",
+  "authors": [
+    "Kjartan F. Kvamme"
+  ],
+  "description": "Template-based system for value propagation.",
+  "copyright": "Copyright © 2016, Kjartan F. Kvamme",
+  "license": "MIT"
+}
