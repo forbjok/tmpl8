@@ -8,6 +8,7 @@ import tmpl8.config : Config;
 import tmpl8.input : Input;
 import tmpl8.parser : Parser;
 import tmpl8.services.filelocator : FileLocator;
+import tmpl8.services.commandtransformer : CommandTransformer;
 
 int main(string[] args)
 {
@@ -48,6 +49,15 @@ int main(string[] args)
 
             vars[mapTo] = var.value;
         }
+    }
+
+    auto commandTransformer = new CommandTransformer();
+    foreach(tf; cfg.transforms) {
+        auto outValue = commandTransformer.transform(
+            tf.command,
+            vars[tf.inVariable]);
+
+        vars[tf.outVariable] = outValue;
     }
 
     foreach(var; vars.byKeyValue()) {

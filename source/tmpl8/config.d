@@ -10,5 +10,12 @@ struct Config {
         bool excludeUnmapped;
     }
 
+    struct Transform {
+        string command;
+        string inVariable;
+        string outVariable;
+    }
+
     Source[] sources;
+    Transform[] transforms;
 }
