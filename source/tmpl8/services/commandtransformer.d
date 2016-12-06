@@ -24,8 +24,15 @@ class CommandTransformer : ICommandTransformer {
         // Get stdout of pipe
         auto stdout = pipe.stdout;
 
+        // Get size of output
+        auto dataSize = stdout.size().to!size_t;
+
+        // If there is no output, simply return an empty string
+        if (dataSize == 0)
+            return "";
+
         // Read output value from process stdout
-        auto data = new byte[stdout.size().to!size_t];
+        auto data = new byte[dataSize];
         stdout.rawRead(data);
 
         return cast(string) data;
