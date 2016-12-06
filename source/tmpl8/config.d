@@ -16,6 +16,11 @@ struct Config {
         string outVariable;
     }
 
+    struct Template {
+        string encoding;
+    }
+
     Source[] sources;
     Transform[] transforms;
+    Template[string] templates;
 }

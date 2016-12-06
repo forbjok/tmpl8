@@ -1,6 +1,6 @@
 import std.stdio : writeln;
 import std.file : chdir, getcwd, readText;
-import std.path : dirName;
+import std.path : baseName, dirName, stripExtension;
 
 import jsonserialized.deserialization : deserializeFromJSONValue;
 import stdx.data.json : toJSONValue;
@@ -10,11 +10,12 @@ import tmpl8.input : Input;
 import tmpl8.parser : Parser;
 import tmpl8.services.filelocator : FileLocator;
 import tmpl8.services.commandtransformer : CommandTransformer;
+import tmpl8.services.templateprocessor : TemplateProcessor;
 
 int main(string[] args)
 {
-    auto loc = new FileLocator();
-    auto configFile = loc.locateFileInPathOrParent(getcwd(), "tmpl8.json");
+    auto fileLocator = new FileLocator();
+    auto configFile = fileLocator.locateFileInPathOrParent(getcwd(), "tmpl8.json");
 
     auto rootPath = configFile.dirName();
     writeln("Config file found: ", configFile);
@@ -66,6 +67,28 @@ int main(string[] args)
             vars[tf.inVariable]);
 
         vars[tf.outVariable] = outValue;
+    }
+
+    /* Process templates */
+    auto templateProcessor = new TemplateProcessor();
+
+    foreach(tmpItem; cfg.templates.byKeyValue()) {
+        auto pattern = tmpItem.key;
+        auto tmp = tmpItem.value;
+
+        // Locate all matching templates withing the root directory
+        auto templateFiles = fileLocator.locateTemplates(rootPath, pattern);
+
+        foreach(string templateFile; templateFiles) {
+            // Get output filename by stripping the template extension
+            auto outputFile = templateFile.stripExtension();
+
+            auto templateFilename = templateFile.baseName();
+            writeln("Processing template: ", templateFilename);
+
+            // Process the template
+            templateProcessor.processTemplate(templateFile, outputFile, vars);
+        }
     }
 
     foreach(var; vars.byKeyValue()) {

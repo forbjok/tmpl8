@@ -1,4 +1,4 @@
-module utils.templating;
+module tmpl8.utils.templating;
 
 import std.exception;
 import std.format;
