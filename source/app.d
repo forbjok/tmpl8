@@ -1,5 +1,6 @@
 import std.stdio : writeln;
-import std.file : getcwd, readText;
+import std.file : chdir, getcwd, readText;
+import std.path : dirName;
 
 import jsonserialized.deserialization : deserializeFromJSONValue;
 import stdx.data.json : toJSONValue;
@@ -13,14 +14,21 @@ import tmpl8.services.commandtransformer : CommandTransformer;
 int main(string[] args)
 {
     auto loc = new FileLocator();
-    auto fileFound = loc.locateFileInPathOrParent(getcwd(), "tmpl8.json");
+    auto configFile = loc.locateFileInPathOrParent(getcwd(), "tmpl8.json");
 
-    writeln("File found: ", fileFound);
+    auto rootPath = configFile.dirName();
+    writeln("Config file found: ", configFile);
 
     Config cfg;
-    string configText = readText(fileFound);
+    string configText = readText(configFile);
     auto configJsonValue = configText.toJSONValue;
     cfg.deserializeFromJSONValue(configJsonValue);
+
+    /* Change current working directory to config root path.
+       This is necessary to ensure that any executables executed by the
+       config can be found in a path relative to the config regardless
+       of which subdirectory the generation is run from. */
+    chdir(rootPath);
 
     string[string] vars;
 
