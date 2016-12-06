@@ -62,9 +62,11 @@ int main(string[] args)
 
     auto commandTransformer = new CommandTransformer();
     foreach(tf; cfg.transforms) {
+        auto inValue = vars.get(tf.inVariable, "");
+
         auto outValue = commandTransformer.transform(
             tf.command,
-            vars[tf.inVariable]);
+            inValue);
 
         vars[tf.outVariable] = outValue;
     }
