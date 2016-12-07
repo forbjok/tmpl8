@@ -49,14 +49,13 @@ int main(string[] args)
 
         foreach(var; curVars.byKeyValue()) {
             auto mapTo = source.mappings.get(var.key, null);
+            if (mapTo !is null)
+                vars[mapTo] = var.value;
 
-            if (source.excludeUnmapped && mapTo is null)
+            if (source.excludeUnmapped)
                 continue;
 
-            if (mapTo is null)
-                mapTo = var.key;
-
-            vars[mapTo] = var.value;
+            vars[var.key] = var.value;
         }
     }
 
