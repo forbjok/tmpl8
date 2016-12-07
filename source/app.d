@@ -47,15 +47,16 @@ int main(string[] args)
 
         auto curVars = parser.parse(source.parserParameters, input.getData(source.inputParameters));
 
-        foreach(var; curVars.byKeyValue()) {
-            auto mapTo = source.mappings.get(var.key, null);
-            if (mapTo !is null)
-                vars[mapTo] = var.value;
+        /* Copy all variables from source, unless excludeUnmapped is true */
+        if (!source.excludeUnmapped) {
+            foreach(var; curVars.byKeyValue()) {
+                vars[var.key] = var.value;
+            }
+        }
 
-            if (source.excludeUnmapped)
-                continue;
-
-            vars[var.key] = var.value;
+        /* Copy mappings */
+        foreach(mapping; source.mappings.byKeyValue()) {
+            vars[mapping.key] = curVars.get(mapping.value, "");
         }
     }
 
