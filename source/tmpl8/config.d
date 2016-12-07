@@ -23,4 +23,6 @@ struct Config {
     Source[] sources;
     Transform[] transforms;
     Template[string] templates;
+
+    string updateGitIgnore;
 }

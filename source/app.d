@@ -1,6 +1,6 @@
 import std.stdio : writeln;
 import std.file : chdir, getcwd, readText;
-import std.path : baseName, dirName, stripExtension;
+import std.path : baseName, buildPath, dirName, relativePath, stripExtension;
 
 import jsonserialized.deserialization : deserializeFromJSONValue;
 import stdx.data.json : toJSONValue;
@@ -71,6 +71,8 @@ int main(string[] args)
         vars[tf.outVariable] = outValue;
     }
 
+    string[] ignoreFiles;
+
     /* Process templates */
     auto templateProcessor = new TemplateProcessor();
 
@@ -85,12 +87,24 @@ int main(string[] args)
             // Get output filename by stripping the template extension
             auto outputFile = templateFile.stripExtension();
 
-            auto templateFilename = templateFile.baseName();
-            writeln("Processing template: ", templateFilename);
+            auto relativeTemplatePath = relativePath(outputFile, rootPath);
+            writeln("Processing template: ", relativeTemplatePath);
 
             // Process the template
             templateProcessor.processTemplate(templateFile, outputFile, vars);
+
+            // Add to list of files to ignore
+            ignoreFiles ~= relativeTemplatePath;
         }
+    }
+
+    if (cfg.updateGitIgnore.length > 0) {
+        writeln("Updating .gitignore file: ", cfg.updateGitIgnore);
+
+        import tmpl8.services.gitignoreupdater : GitIgnoreUpdater;
+        auto gitIgnoreUpdater = new GitIgnoreUpdater();
+
+        gitIgnoreUpdater.updateGitIgnore(buildPath(rootPath, cfg.updateGitIgnore), ignoreFiles);
     }
 
     foreach(var; vars.byKeyValue()) {
