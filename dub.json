@@ -9,5 +9,6 @@
   },
   "description": "Template-based system for value propagation.",
   "copyright": "Copyright © 2016, Kjartan F. Kvamme",
-  "license": "MIT"
+  "license": "MIT",
+  "stringImportPaths": ["."]
 }

@@ -1,20 +1,67 @@
-import std.stdio : writeln;
-import std.path : dirName, getcwd;
+static import std.getopt;
 
-import tmpl8.services.filelocator : FileLocator;
-import tmpl8.services.tmpl8service : Tmpl8Service;
+import std.algorithm : until;
+import std.array : array;
+import std.path : baseName;
+import std.range : chain, takeExactly;
+import std.stdio : stderr, writefln;
+import std.string : startsWith;
 
-private const tmpl8ConfigFilename = "tmpl8.json";
+import cli.command : getCommand;
 
 int main(string[] args)
 {
-    auto fileLocator = new FileLocator();
-    auto configFile = fileLocator.locateFileInPathOrParent(getcwd(), tmpl8ConfigFilename);
+    bool versionWanted = false;
 
-    writeln("Config file found: ", configFile);
+    try {
+        /* Concatenate the executable path with all subsequent arguments up to
+           the first one that does not start with optionChar. (normally "-")
 
-    auto tmpl8Service = new Tmpl8Service();
-    tmpl8Service.generate(configFile);
+           This is required to prevent getopt from parsing options that are
+           intended for the command. */
+        auto options = chain(args.takeExactly(1), args[1..$].until!(a => !a.startsWith(std.getopt.optionChar))).array();
 
-    return 0;
+        // Parse arguments
+        auto getoptResult = std.getopt.getopt(options,
+            std.getopt.config.bundling,
+            "version", &versionWanted);
+
+        if (getoptResult.helpWanted) {
+            // If user wants help, give it to them
+            writeUsage(args[0]);
+            return 0;
+        }
+    }
+    catch(Exception ex) {
+        // If there is an error parsing arguments, print it
+        stderr.writeln(ex.msg);
+        return 1;
+    }
+
+    if (versionWanted) {
+        writefln("Tmpl8 version %s", import("VERSION"));
+        return 0;
+    }
+
+    if (args.length == 1) {
+        stderr.writeln("No command specified.");
+        writeUsage(args[0]);
+        return 1;
+    }
+
+    // Get command
+    auto command = args[1];
+
+    auto commandImplementation = getCommand(command);
+    if (commandImplementation is null) {
+        stderr.writefln("Unknown command: %s.", command);
+        writeUsage(args[0]);
+        return 1;
+    }
+
+    return commandImplementation.Execute(args[1..$]);
+}
+
+void writeUsage(in string executable) {
+    stderr.writefln("Usage: %s <generate> [--help] [...]", executable.baseName());
 }
