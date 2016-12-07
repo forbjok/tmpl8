@@ -33,6 +33,8 @@ int main(string[] args)
 
     string[string] vars;
 
+    writeln("Harvesting variables...");
+
     foreach(source; cfg.sources) {
         auto input = Input.get(source.input);
         auto parser = Parser.get(source.parser);
@@ -59,6 +61,8 @@ int main(string[] args)
             vars[mapping.key] = curVars.get(mapping.value, "");
         }
     }
+
+    writeln("Executing transforms...");
 
     auto commandTransformer = new CommandTransformer();
     foreach(tf; cfg.transforms) {
