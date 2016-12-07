@@ -5,10 +5,7 @@ import std.path : getcwd;
 import std.stdio : stderr, writefln, writeln;
 
 import cli.command : ICommand, registerCommand;
-import tmpl8.services.filelocator : FileLocator;
 import tmpl8.services.tmpl8service : Tmpl8Service;
-
-private const tmpl8ConfigFilename = "tmpl8.json";
 
 class GenerateCommand : ICommand {
     static this() {
@@ -40,13 +37,8 @@ class GenerateCommand : ICommand {
         }
 
         try {
-            auto fileLocator = new FileLocator();
-            auto configFile = fileLocator.locateFileInPathOrParent(getcwd(), tmpl8ConfigFilename);
-
-            writeln("Config file found: ", configFile);
-
-            auto tmpl8Service = new Tmpl8Service();
-            tmpl8Service.generate(configFile);
+            auto tmpl8Service = new Tmpl8Service(getcwd());
+            tmpl8Service.generate();
 
             return 0;
         }

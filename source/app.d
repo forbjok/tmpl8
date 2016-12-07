@@ -63,5 +63,5 @@ int main(string[] args)
 }
 
 void writeUsage(in string executable) {
-    stderr.writefln("Usage: %s <generate> [--help] [...]", executable.baseName());
+    stderr.writefln("Usage: %s <generate|get> [--help] [...]", executable.baseName());
 }
