@@ -1,0 +1,17 @@
+module tmpl8.parsers.env;
+
+import std.process : environment;
+
+import tmpl8.parser : Parser;
+import tmpl8.interfaces : IParser;
+
+class EnvParser : IParser {
+    static this() {
+        Parser.register("env", new this());
+    }
+
+    /// Return environment variables
+    string[string] parse(string[string] parameters, const byte[] data) {
+        return environment.toAA();
+    }
+}

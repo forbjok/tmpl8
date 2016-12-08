@@ -60,6 +60,10 @@ class Tmpl8Service {
         stderr.writeln("Harvesting variables...");
 
         foreach(source; _config.sources) {
+            /* If no input is specified, default to none */
+            if (source.input.length == 0)
+                source.input = "none";
+
             auto input = Input.get(source.input);
             auto parser = Parser.get(source.parser);
 
