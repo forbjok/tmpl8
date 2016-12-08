@@ -5,11 +5,32 @@ import std.path : getcwd;
 import std.stdio : stderr, stdout;
 import std.string : replace;
 
+import dyaml.stream : YStream;
 import jsonserialized.serialization : serializeToJSONValue;
 import stdx.data.json : toJSON;
+import yaml : Dumper;
+import yamlserialized.serialization : serializeToYAMLNode;
 
 import cli.command : ICommand, registerCommand;
 import tmpl8.services.tmpl8service : Tmpl8Service;
+
+/// dyaml YStream implementation for writing to stdout
+class YStdOut : YStream {
+	void writeExact(const void* buffer, size_t size) {
+		stdout.write(cast(const char[]) buffer[0 .. size]);
+	}
+
+	size_t write(const(ubyte)[] buffer) {
+		stdout.write(cast(const char[]) buffer);
+		return buffer.length;
+	}
+
+	void flush() {
+		stdout.flush();
+	}
+
+	@property bool writeable() { return true; }
+}
 
 class GetCommand : ICommand {
     static this() {
@@ -59,6 +80,13 @@ class GetCommand : ICommand {
                     json = json.replace("\t", "  ");
 
                     stdout.writeln(json);
+                    break;
+                case "yaml":
+                    auto vars = getVariables();
+                    auto node = vars.serializeToYAMLNode();
+
+                    auto dumper = Dumper(new YStdOut());
+                    dumper.dump(node);
                     break;
                 default:
                     throw new Exception("Unsupported format: " ~ format);
