@@ -150,14 +150,15 @@ class Tmpl8Service {
                 // Get output filename by stripping the template extension
                 auto outputFile = templateFile.stripExtension();
 
-                auto relativeTemplatePath = relativePath(outputFile, _rootPath);
+                auto relativeTemplatePath = relativePath(templateFile, _rootPath);
+                auto relativeOutputFilePath = relativePath(outputFile, _rootPath);
                 stderr.writeln("Processing template: ", relativeTemplatePath);
 
                 // Process the template
                 templateProcessor.processTemplate(templateFile, outputFile, vars);
 
                 // Add to list of files to ignore
-                ignoreFiles ~= relativeTemplatePath;
+                ignoreFiles ~= relativeOutputFilePath;
             }
         }
 
