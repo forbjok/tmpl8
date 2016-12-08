@@ -1,6 +1,7 @@
 module tmpl8.services.templateprocessor;
 
 import std.file : readText, write;
+import std.path : baseName;
 import std.stdio : stderr;
 
 import tmpl8.utils.templating : replaceTemplateVars;
@@ -18,7 +19,7 @@ class TemplateProcessor {
             write(outputFile, cast(void[]) text);
         }
         catch(Exception ex) {
-            stderr.writefln("%s: %s", templateFile, ex.msg);
+            stderr.writefln("Error processing template [ %s ]: %s", baseName(templateFile), ex.msg);
         }
     }
 }
