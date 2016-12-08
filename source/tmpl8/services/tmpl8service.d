@@ -2,10 +2,13 @@ module tmpl8.services.tmpl8service;
 
 import std.stdio : stderr;
 import std.file : chdir, readText;
-import std.path : baseName, buildPath, dirName, getcwd, relativePath, stripExtension;
+import std.path : baseName, buildPath, dirName, extension, getcwd, relativePath, stripExtension;
 
 import jsonserialized.deserialization : deserializeFromJSONValue;
 import stdx.data.json : toJSONValue;
+
+import yaml : Loader;
+import yamlserialized.deserialization : deserializeInto;
 
 import tmpl8.config : Config;
 import tmpl8.input : Input;
@@ -14,7 +17,7 @@ import tmpl8.services.filelocator : FileLocator;
 import tmpl8.services.commandtransformer : CommandTransformer;
 import tmpl8.services.templateprocessor : TemplateProcessor;
 
-private const tmpl8ConfigFilename = "tmpl8.json";
+private const tmpl8ConfigFilenames = ["tmpl8.yml", "tmpl8.json"];
 
 class Tmpl8Service {
     private {
@@ -26,7 +29,17 @@ class Tmpl8Service {
     this(in string path) {
         auto fileLocator = new FileLocator();
 
-        _configFilePath = fileLocator.locateFileInPathOrParent(path, tmpl8ConfigFilename);
+        foreach(configFileName; tmpl8ConfigFilenames) {
+            _configFilePath = fileLocator.locateFileInPathOrParent(path, configFileName);
+
+            /* If a configuration file was found, break out of loop */
+            if (_configFilePath.length != 0)
+                break;
+        }
+
+        if (_configFilePath.length == 0)
+            throw new Exception("No config file found!");
+
         _rootPath = _configFilePath.dirName();
 
         stderr.writeln("Config file found: ", _configFilePath);
@@ -36,10 +49,23 @@ class Tmpl8Service {
     }
 
     private void loadConfig() {
-        string configText = readText(_configFilePath);
 
-        auto configJsonValue = configText.toJSONValue;
-        _config.deserializeFromJSONValue(configJsonValue);
+        auto configFileExtension = _configFilePath.extension();
+        switch (configFileExtension) {
+            case ".yml":
+                /* Load YAML file and deserialize it into _config */
+                auto node = Loader(_configFilePath).load();
+                node.deserializeInto(_config);
+                break;
+            case ".json":
+                /* Load JSON file and deserialize it into _config */
+                string configText = readText(_configFilePath);
+                auto configJsonValue = configText.toJSONValue;
+                _config.deserializeFromJSONValue(configJsonValue);
+                break;
+            default:
+                throw new Exception("Unsupported configuration file type: ", configFileExtension);
+        }
     }
 
     string[string] harvestVariables() {
