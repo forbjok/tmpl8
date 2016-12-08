@@ -23,7 +23,6 @@ int main(string[] args)
 
         // Parse arguments
         auto getoptResult = std.getopt.getopt(options,
-            std.getopt.config.bundling,
             "version", &versionWanted);
 
         if (getoptResult.helpWanted) {

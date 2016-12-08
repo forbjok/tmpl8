@@ -1,6 +1,7 @@
 module cli.commands.get;
 
 static import std.getopt;
+
 import std.path : getcwd;
 import std.stdio : stderr, stdout;
 import std.string : replace;
@@ -38,18 +39,14 @@ class GetCommand : ICommand {
     }
 
     private void writeUsage(in string command) {
-        stderr.writefln("Usage: tmpl8 %s [--format=<FORMAT>]", command);
-        stderr.writeln("Supported formats: json");
+        stderr.writefln("Usage: tmpl8 %s <FORMAT>", command);
+        stderr.writeln("Supported formats: json, yaml");
     }
 
     int Execute(string[] args) {
-        string format;
-
         try {
             // Parse arguments
-            auto getoptResult = std.getopt.getopt(args,
-                std.getopt.config.bundling,
-                "f|format", &format);
+            auto getoptResult = std.getopt.getopt(args, std.getopt.config.passThrough);
 
             if (getoptResult.helpWanted) {
                 // If user wants help, give it to them
@@ -63,12 +60,16 @@ class GetCommand : ICommand {
             return 1;
         }
 
-        if (format.length == 0) {
+        // Make sure a format was specified
+        if (args.length < 2) {
             stderr.writeln("No format specified.");
             writeUsage(args[0]);
 
             return 1;
         }
+
+        // Get format
+        auto format = args[1];
 
         try {
             switch (format) {
