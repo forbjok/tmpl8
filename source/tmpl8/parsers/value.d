@@ -9,7 +9,7 @@ class ValueParser : IParser {
     }
 
     /// Parse a UTF-8 encoded byte array of JSON into variables
-    string[string] parse(string[string] parameters, const byte[] data) {
+    string[string] parse(string[string] parameters, const ubyte[] data) {
         auto key = parameters.get("key", "");
         auto stringData = cast(string) data;
 

@@ -12,10 +12,10 @@ class FileInput : IInput {
         Input.register("file", new this());
     }
 
-    byte[] getData(string[string] parameters) {
+    ubyte[] getData(string[string] parameters) {
         auto filename = parameters.get("path", "");
 
-        auto data = cast(byte[]) read(filename);
+        auto data = cast(ubyte[]) read(filename);
 
         return data;
     }

@@ -12,7 +12,7 @@ class ExecInput : IInput {
         Input.register("exec", new this());
     }
 
-    byte[] getData(string[string] parameters) {
+    ubyte[] getData(string[string] parameters) {
         auto command = parameters.get("command", "");
 
         // Execute command
@@ -29,10 +29,10 @@ class ExecInput : IInput {
 
         // If there is no output, simply return an empty array
         if (dataSize == 0)
-            return new byte[0];
+            return new ubyte[0];
 
         // Read data from process stdout
-        auto data = new byte[dataSize];
+        auto data = new ubyte[dataSize];
         stdout.rawRead(data);
 
         return data;

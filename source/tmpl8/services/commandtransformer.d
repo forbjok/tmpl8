@@ -32,7 +32,7 @@ class CommandTransformer : ICommandTransformer {
             return "";
 
         // Read output value from process stdout
-        auto data = new byte[dataSize];
+        auto data = new ubyte[dataSize];
         stdout.rawRead(data);
 
         return cast(string) data;

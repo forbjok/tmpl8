@@ -11,7 +11,7 @@ class EnvParser : IParser {
     }
 
     /// Return environment variables
-    string[string] parse(string[string] parameters, const byte[] data) {
+    string[string] parse(string[string] parameters, const ubyte[] data) {
         return environment.toAA();
     }
 }

@@ -13,17 +13,17 @@ class StdinInput : IInput {
         Input.register("stdin", new this());
     }
 
-    byte[] getData(string[string] parameters) {
+    ubyte[] getData(string[string] parameters) {
         try {
             auto dataSize = stdin.size().to!size_t;
-            auto data = new byte[dataSize];
+            auto data = new ubyte[dataSize];
 
             stdin.rawRead(data);
 
             return data;
         }
         catch (ErrnoException) {
-            return new byte[0];
+            return new ubyte[0];
         }
     }
 }

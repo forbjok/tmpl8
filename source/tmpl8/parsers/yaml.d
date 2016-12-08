@@ -12,7 +12,7 @@ class YamlParser : IParser {
     }
 
     /// Parse a UTF-8 encoded byte array of YAML into variables
-    string[string] parse(string[string] parameters, const byte[] data) {
+    string[string] parse(string[string] parameters, const ubyte[] data) {
         auto yaml = cast(char[]) data;
 
         string[string] vars;

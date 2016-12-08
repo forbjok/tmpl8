@@ -1,9 +1,9 @@
 module tmpl8.interfaces;
 
 interface IInput {
-    byte[] getData(string[string] parameters);
+    ubyte[] getData(string[string] parameters);
 }
 
 interface IParser {
-    string[string] parse(string[string] parameters, const byte[] data);
+    string[string] parse(string[string] parameters, const ubyte[] data);
 }

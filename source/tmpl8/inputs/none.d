@@ -9,7 +9,7 @@ class NoneInput : IInput {
         Input.register("none", new this());
     }
 
-    byte[] getData(string[string] parameters) {
-        return new byte[0];
+    ubyte[] getData(string[string] parameters) {
+        return new ubyte[0];
     }
 }
