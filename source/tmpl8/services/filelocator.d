@@ -1,8 +1,9 @@
 module tmpl8.services.filelocator;
 
 import std.algorithm;
-import std.file;
-import std.path : absolutePath, buildPath, dirName, globMatch;
+import std.file : dirEntries, exists, isDir, isFile, SpanMode;
+import std.path : absolutePath, buildPath, dirName, globMatch, relativePath;
+import std.string : replace;
 
 interface IFileLocator {
 }
@@ -36,9 +37,9 @@ class FileLocator : IFileLocator {
     }
 
     /// Locate templates
-    auto locateTemplates(in string startPath, in string pattern) {
+    auto locateTemplates(in string startPath, in string glob) {
         auto files = dirEntries(startPath, SpanMode.breadth, false)
-            .filter!(f => globMatch(f.name, pattern));
+            .filter!(f => globMatch(f.name.relativePath(startPath), glob));
 
         return files;
     }

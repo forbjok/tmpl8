@@ -141,13 +141,10 @@ class Tmpl8Service {
         /* Process templates */
         auto templateProcessor = new TemplateProcessor();
 
-        foreach(tmpItem; _config.templates.byKeyValue()) {
-            auto pattern = tmpItem.key;
-            auto tmp = tmpItem.value;
-
+        foreach(tmp; _config.templates) {
             // Locate all matching templates withing the root directory
             auto fileLocator = new FileLocator();
-            auto templateFiles = fileLocator.locateTemplates(_rootPath, pattern);
+            auto templateFiles = fileLocator.locateTemplates(_rootPath, tmp.glob);
 
             foreach(string templateFile; templateFiles) {
                 // Get output filename by stripping the template extension

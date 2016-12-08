@@ -17,12 +17,13 @@ struct Config {
     }
 
     struct Template {
+        string glob;
         string encoding;
     }
 
     Source[] sources;
     Transform[] transforms;
-    Template[string] templates;
+    Template[] templates;
 
     string updateGitIgnore;
 }
