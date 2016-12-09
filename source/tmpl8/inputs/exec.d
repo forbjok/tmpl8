@@ -1,7 +1,8 @@
 module tmpl8.inputs.exec;
 
-import std.conv : to;
-import std.process : pipeShell, Redirect, wait;
+import std.algorithm : joiner;
+import std.array : array;
+import std.process : pipeShell, Redirect;
 
 import tmpl8.input : Input;
 import tmpl8.interfaces : IInput;
@@ -18,23 +19,10 @@ class ExecInput : IInput {
         // Execute command
         auto pipe = pipeShell(command, Redirect.stdout);
 
-        // Wait for process to exit
-        wait(pipe.pid);
-
         // Get stdout of pipe
         auto stdout = pipe.stdout();
 
-        // Get size of output
-        auto dataSize = stdout.size().to!size_t;
-
-        // If there is no output, simply return an empty array
-        if (dataSize == 0)
-            return new ubyte[0];
-
-        // Read data from process stdout
-        auto data = new ubyte[dataSize];
-        stdout.rawRead(data);
-
+        auto data = stdout.byChunk(4096).joiner.array();
         return data;
     }
 }
