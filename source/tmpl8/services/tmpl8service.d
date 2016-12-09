@@ -12,7 +12,6 @@ import yaml : Loader;
 import yamlserialized.deserialization : deserializeInto;
 
 import tmpl8.config : Config;
-import tmpl8.encoding : Encoding;
 import tmpl8.input : Input;
 import tmpl8.parser : Parser;
 import tmpl8.services.filelocator : FileLocator;
@@ -149,9 +148,6 @@ class Tmpl8Service {
             auto fileLocator = new FileLocator();
             auto templateFiles = fileLocator.locateTemplates(_rootPath, tmp.glob);
 
-            // Get the encoding for this template
-            auto encoding = Encoding.get(tmp.encoding);
-
             /* Subtract already processed template files from the located files for this glob
                to ensure that each template file is only processed once. */
             auto templateFilesToProcess = setDifference(templateFiles, templateFilesProcessed);
@@ -165,7 +161,7 @@ class Tmpl8Service {
                 stderr.writeln("Processing template: ", relativeTemplatePath);
 
                 // Process the template
-                templateProcessor.processTemplate(encoding, templateFile, outputFile, vars);
+                templateProcessor.processTemplate(templateFile, outputFile, vars, tmp.encoding);
 
                 // Add to list of files to ignore
                 ignoreFiles ~= relativeOutputFilePath;
