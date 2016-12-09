@@ -52,7 +52,7 @@ class GitIgnoreUpdater {
         }
 
         newBlockLines ~= [beginComment] ~ ignoreFiles.map!(f => f.replace(dirSeparator, "/")).array() ~ [endComment];
-        auto newLines = (linesBefore ~ newBlockLines ~ linesAfter).join("\n");
+        auto newLines = (linesBefore ~ newBlockLines ~ linesAfter).join("\n") ~ "\n";
 
         // Write new file
         write(filename, newLines);
