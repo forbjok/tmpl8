@@ -28,17 +28,14 @@ class StdinInput : IInput {
             return data;
         }
         else version (Windows) {
-            try {
-                auto dataSize = stdin.size().to!size_t;
-                auto data = new ubyte[dataSize];
+            import core.sys.windows.winbase : FILE_TYPE_PIPE, GetFileType;
 
-                stdin.rawRead(data);
-
-                return data;
-            }
-            catch (ErrnoException) {
+            // If stdin file is not a pipe, return an empty buffer
+            if (GetFileType(stdin.windowsHandle) != FILE_TYPE_PIPE)
                 return new ubyte[0];
-            }
+
+            auto data = stdin.byChunk(4096).joiner.array();
+            return data;
         }
     }
 }
