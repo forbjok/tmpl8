@@ -26,5 +26,5 @@ struct Config {
     Transform[] transforms;
     Template[] templates;
 
-    string updateGitIgnore;
+    string gitIgnore;
 }

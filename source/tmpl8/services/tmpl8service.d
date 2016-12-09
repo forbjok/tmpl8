@@ -192,7 +192,7 @@ class Tmpl8Service {
                 defaultIgnoreFiles ~= ignoreFiles;
         }
 
-        updateGitIgnores ~= UpdateGitIgnore(_config.updateGitIgnore, defaultIgnoreFiles);
+        updateGitIgnores ~= UpdateGitIgnore(_config.gitIgnore, defaultIgnoreFiles);
 
         /* Update all .gitignore files */
         foreach(ugi; updateGitIgnores) {
