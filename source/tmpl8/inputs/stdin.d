@@ -1,5 +1,7 @@
 module tmpl8.inputs.stdin;
 
+import std.algorithm : joiner;
+import std.array : array;
 import std.conv : to;
 import std.exception : ErrnoException;
 import std.stdio : File, stdin;
@@ -14,16 +16,29 @@ class StdinInput : IInput {
     }
 
     ubyte[] getData(string[string] parameters) {
-        try {
-            auto dataSize = stdin.size().to!size_t;
-            auto data = new ubyte[dataSize];
+        version (Posix) {
+            import core.sys.posix.unistd : isatty;
 
-            stdin.rawRead(data);
+            // If it's a tty (terminal), no data was piped to stdin
+            // Return an empty buffer.
+            if (isatty(stdin.fileno()))
+                return new ubyte[0];
 
+            auto data = stdin.byChunk(4096).joiner.array();
             return data;
         }
-        catch (ErrnoException) {
-            return new ubyte[0];
+        else version (Windows) {
+            try {
+                auto dataSize = stdin.size().to!size_t;
+                auto data = new ubyte[dataSize];
+
+                stdin.rawRead(data);
+
+                return data;
+            }
+            catch (ErrnoException) {
+                return new ubyte[0];
+            }
         }
     }
 }
