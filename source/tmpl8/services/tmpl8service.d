@@ -1,5 +1,6 @@
 module tmpl8.services.tmpl8service;
 
+import std.algorithm : setDifference;
 import std.stdio : stderr;
 import std.file : chdir, readText;
 import std.path : baseName, buildPath, dirName, extension, getcwd, relativePath, stripExtension;
@@ -138,6 +139,7 @@ class Tmpl8Service {
         auto vars = harvestVariables();
 
         string[] ignoreFiles;
+        string[] templateFilesProcessed;
 
         /* Process templates */
         auto templateProcessor = new TemplateProcessor();
@@ -150,7 +152,11 @@ class Tmpl8Service {
             // Get the encoding for this template
             auto encoding = Encoding.get(tmp.encoding);
 
-            foreach(string templateFile; templateFiles) {
+            /* Subtract already processed template files from the located files for this glob
+               to ensure that each template file is only processed once. */
+            auto templateFilesToProcess = setDifference(templateFiles, templateFilesProcessed);
+
+            foreach(templateFile; templateFilesToProcess) {
                 // Get output filename by stripping the template extension
                 auto outputFile = templateFile.stripExtension();
 
@@ -163,6 +169,9 @@ class Tmpl8Service {
 
                 // Add to list of files to ignore
                 ignoreFiles ~= relativeOutputFilePath;
+
+                // Add to list of processed template files
+                templateFilesProcessed ~= templateFile;
             }
         }
 
