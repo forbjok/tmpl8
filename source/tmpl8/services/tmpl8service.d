@@ -1,6 +1,7 @@
 module tmpl8.services.tmpl8service;
 
-import std.algorithm : setDifference;
+import std.algorithm : map, setDifference;
+import std.array : array;
 import std.stdio : stderr;
 import std.file : chdir, readText;
 import std.path : baseName, buildPath, dirName, extension, getcwd, relativePath, stripExtension;
@@ -171,7 +172,6 @@ class Tmpl8Service {
                 auto outputFile = templateFile.stripExtension();
 
                 auto relativeTemplatePath = relativePath(templateFile, _rootPath);
-                auto relativeOutputFilePath = relativePath(outputFile, _rootPath);
                 stderr.writeln("Processing template: ", relativeTemplatePath);
 
                 // Process the template
@@ -181,7 +181,7 @@ class Tmpl8Service {
                 templateFilesProcessed ~= templateFile;
 
                 // Add to list of files to ignore
-                ignoreFiles ~= relativeOutputFilePath;
+                ignoreFiles ~= outputFile;
             }
 
             if (tmp.gitIgnore.length > 0)
@@ -205,7 +205,13 @@ class Tmpl8Service {
             import tmpl8.services.gitignoreupdater : GitIgnoreUpdater;
             auto gitIgnoreUpdater = new GitIgnoreUpdater();
 
-            gitIgnoreUpdater.updateGitIgnore(buildPath(_rootPath, ugi.gitIgnore), ugi.ignoreFiles);
+            auto gitIgnoreFile = buildPath(_rootPath, ugi.gitIgnore);
+            auto gitIgnorePath = dirName(gitIgnoreFile);
+
+            // Make ignored files relative to the .gitignore file's path
+            auto ignoreFiles = ugi.ignoreFiles.map!(f => relativePath(f, gitIgnorePath)).array();
+
+            gitIgnoreUpdater.updateGitIgnore(gitIgnoreFile, ignoreFiles);
         }
     }
 }
