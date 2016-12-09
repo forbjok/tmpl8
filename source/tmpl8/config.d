@@ -19,6 +19,7 @@ struct Config {
     struct Template {
         string glob;
         string encoding;
+        string gitIgnore;
     }
 
     Source[] sources;

@@ -22,6 +22,16 @@ private const tmpl8ConfigFilenames = ["tmpl8.yml", "tmpl8.json"];
 
 class Tmpl8Service {
     private {
+        struct UpdateGitIgnore {
+            string gitIgnore;
+            string[] ignoreFiles;
+
+            this(string gitIgnore, string[] ignoreFiles) {
+                this.gitIgnore = gitIgnore;
+                this.ignoreFiles = ignoreFiles;
+            }
+        }
+
         string _configFilePath;
         string _rootPath;
         Config _config;
@@ -137,13 +147,17 @@ class Tmpl8Service {
         // Harvest variables
         auto vars = harvestVariables();
 
-        string[] ignoreFiles;
+        UpdateGitIgnore[] updateGitIgnores;
+
+        string[] defaultIgnoreFiles;
         string[] templateFilesProcessed;
 
         /* Process templates */
         auto templateProcessor = new TemplateProcessor();
 
         foreach(tmp; _config.templates) {
+            string[] ignoreFiles;
+
             // Locate all matching templates withing the root directory
             auto fileLocator = new FileLocator();
             auto templateFiles = fileLocator.locateTemplates(_rootPath, tmp.glob);
@@ -163,21 +177,35 @@ class Tmpl8Service {
                 // Process the template
                 templateProcessor.processTemplate(templateFile, outputFile, vars, tmp.encoding);
 
-                // Add to list of files to ignore
-                ignoreFiles ~= relativeOutputFilePath;
-
                 // Add to list of processed template files
                 templateFilesProcessed ~= templateFile;
+
+                // Add to list of files to ignore
+                ignoreFiles ~= relativeOutputFilePath;
             }
+
+            if (tmp.gitIgnore.length > 0)
+                /* If a template-specific gitIgnore is specified, add it for update. */
+                updateGitIgnores ~= UpdateGitIgnore(tmp.gitIgnore, ignoreFiles);
+            else
+                /* Otherwise, just add this template's ignore files to the default ignore files. */
+                defaultIgnoreFiles ~= ignoreFiles;
         }
 
-        if (_config.updateGitIgnore.length > 0) {
-            stderr.writeln("Updating .gitignore file: ", _config.updateGitIgnore);
+        updateGitIgnores ~= UpdateGitIgnore(_config.updateGitIgnore, defaultIgnoreFiles);
+
+        /* Update all .gitignore files */
+        foreach(ugi; updateGitIgnores) {
+            // If .gitignore path is empty, skip it.
+            if (ugi.gitIgnore.length == 0)
+                continue;
+
+            stderr.writeln("Updating .gitignore file: ", ugi.gitIgnore);
 
             import tmpl8.services.gitignoreupdater : GitIgnoreUpdater;
             auto gitIgnoreUpdater = new GitIgnoreUpdater();
 
-            gitIgnoreUpdater.updateGitIgnore(buildPath(_rootPath, _config.updateGitIgnore), ignoreFiles);
+            gitIgnoreUpdater.updateGitIgnore(buildPath(_rootPath, ugi.gitIgnore), ugi.ignoreFiles);
         }
     }
 }
