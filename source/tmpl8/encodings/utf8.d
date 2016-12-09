@@ -1,7 +1,7 @@
 module tmpl8.encodings.utf8;
 
 import std.algorithm : joiner, map;
-import std.conv : to;
+import std.conv : text, to;
 import std.encoding : EncodingScheme;
 import std.array : array;
 import std.process : pipeShell, Redirect;
@@ -41,6 +41,10 @@ class UTF8Encoding : IEncoding {
         ubyte[] data;
 
         foreach(c; tempString) {
+            // If the character cannot be encoded, throw an exception
+            if (!_encodingScheme.canEncode(c))
+                throw new Exception("Character '" ~ text(c) ~ "' cannot be represented in the target encoding 'utf-8'");
+
             auto len = _encodingScheme.encode(c, buffer);
 
             data ~= buffer[0..len];
