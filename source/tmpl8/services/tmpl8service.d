@@ -1,7 +1,7 @@
 module tmpl8.services.tmpl8service;
 
 import std.algorithm : map, setDifference;
-import std.array : array;
+import std.array : array, empty;
 import std.stdio : stderr;
 import std.file : chdir, readText;
 import std.path : baseName, buildPath, dirName, extension, getcwd, relativePath, stripExtension;
@@ -128,17 +128,19 @@ class Tmpl8Service {
             }
         }
 
-        stderr.writeln("Executing transforms...");
+        if (!_config.transforms.empty) {
+            stderr.writeln("Executing transforms...");
 
-        auto commandTransformer = new CommandTransformer();
-        foreach(tf; _config.transforms) {
-            auto inValue = vars.get(tf.inVariable, "");
+            auto commandTransformer = new CommandTransformer();
+            foreach(tf; _config.transforms) {
+                auto inValue = vars.get(tf.inVariable, "");
 
-            auto outValue = commandTransformer.transform(
-                tf.command,
-                inValue);
+                auto outValue = commandTransformer.transform(
+                    tf.command,
+                    inValue);
 
-            vars[tf.outVariable] = outValue;
+                vars[tf.outVariable] = outValue;
+            }
         }
 
         return vars;
