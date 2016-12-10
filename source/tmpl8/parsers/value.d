@@ -16,7 +16,7 @@ class ValueParser : IParser {
         /* Get encoding name, or default to UTF-8 if none is specified. */
         auto encodingName = parameters.get("encoding", "utf-8");
 
-        auto key = parameters.get("key", "");
+        auto key = parameters.get("outVariable", "");
 
         /* Decode input data to string */
         auto stringData = decode(data, encodingName);

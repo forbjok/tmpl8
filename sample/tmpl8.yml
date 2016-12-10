@@ -23,7 +23,7 @@ sources:
     inputParameters:
       command: "echo Exec value sample variable."
     parserParameters:
-      key: ExecValueSampleVariable
+      outVariable: ExecValueSampleVariable
 
   # Read variables from environment variables
   # The 'env' parser is special and does not require or use an input.
