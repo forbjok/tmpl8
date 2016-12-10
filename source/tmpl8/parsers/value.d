@@ -1,6 +1,7 @@
 module tmpl8.parsers.value;
 
 import std.conv : to;
+import std.string : empty;
 
 import tmpl8.parser : Parser;
 import tmpl8.interfaces : IParser;
@@ -19,10 +20,14 @@ class ValueParser : IParser {
         auto key = parameters.get("outVariable", "");
 
         /* Decode input data to string */
-        auto stringData = decode(data, encodingName);
+        auto stringData = decode(data, encodingName).to!string;
+
+        if (key.empty) {
+            throw new Exception("No output variable specified for value parser with input: " ~ stringData);
+        }
 
         string[string] vars;
-        vars[key] = stringData.to!string;
+        vars[key] = stringData;
 
         return vars;
     }
