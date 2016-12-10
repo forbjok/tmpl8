@@ -11,11 +11,11 @@ sources:
     inputParameters:
       path: "yamlinputsample.yml"
 
-  # Read variables from the JSON output of a shell command
+  # Read variables from the YAML output of a shell command
   - input: exec
-    parser: json
+    parser: yaml
     inputParameters:
-      command: "echo { \"ExecJsonSampleVariable\": \"Exec JSON sample varible.\" }"
+      command: "echo ExecJsonSampleVariable: Exec JSON sample varible."
 
   # Read the output of a shell command directly into a variable
   - input: exec
