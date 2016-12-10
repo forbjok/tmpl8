@@ -13,6 +13,7 @@ import yaml : Dumper;
 import yamlserialized : toYAMLNode;
 
 import cli.command : ICommand, registerCommand;
+import cli.utils.indentation : spacify;
 import tmpl8.services.tmpl8service : Tmpl8Service;
 
 /// dyaml YStream implementation for writing to stdout
@@ -77,8 +78,8 @@ class GetCommand : ICommand {
                     auto vars = getVariables();
                     auto json = vars.serializeToJSONValue().toJSON();
 
-                    /* Replace tabs with two spaces for niceness */
-                    json = json.replace("\t", "  ");
+                    /* Convert tabs to spaces. */
+                    json = json.spacify();
 
                     stdout.writeln(json);
                     break;
