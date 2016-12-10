@@ -1,0 +1,6 @@
+A Windows-1252 encoded template file.
+Some accented characters: Äצףישü
+
+JSON Sample: {{JsonSampleVariable}}
+YAML Sample: {{YamlSampleVariable}}
+Environment PATH: {{EnvironmentPathVariable}}

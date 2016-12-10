@@ -1,0 +1,57 @@
+sources:
+  # Read variables from a JSON file
+  - input: file
+    parser: json
+    inputParameters:
+      path: "jsoninputsample.json"
+
+  # Read variables from a YAML file
+  - input: file
+    parser: yaml
+    inputParameters:
+      path: "yamlinputsample.yml"
+
+  # Read variables from the JSON output of a shell command
+  - input: exec
+    parser: json
+    inputParameters:
+      command: "echo { \"ExecJsonSampleVariable\": \"Exec JSON sample varible.\" }"
+
+  # Read the output of a shell command directly into a variable
+  - input: exec
+    parser: value
+    inputParameters:
+      command: "echo Exec value sample variable."
+    parserParameters:
+      key: ExecValueSampleVariable
+
+  # Read variables from environment variables
+  # The 'env' parser is special and does not require or use an input.
+  - parser: env
+    mappings:
+      # Map PATH from the retrieved variables as EnvironmentPathVariable
+      EnvironmentPathVariable: PATH
+
+    # Exclude all variables except those explicitly mapped
+    excludeUnmapped: true
+
+  # Read variables from JSON piped into stdin
+  - input: stdin
+    parser: json
+
+templates:
+  # Process a specific file using a non-standard encoding
+  - glob: "sampledir/win1252file.txt.tmpl8"
+
+    # Specify encoding to use for these templates - the default is UTF-8
+    encoding: windows-1252
+
+    # Specify an alternate .gitignore file to update for these templates
+    gitIgnore: "sampledir/.gitignore"
+
+  # Process all .tmpl8 files not processed by any previous globs
+  - glob: "*.tmpl8"
+
+# Specify global default .gitignore file to update with files generated from templates
+# This is completely optional, and if omitted, .gitignore will not be updated
+gitIgnore: ".gitignore"

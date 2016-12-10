@@ -1,0 +1,6 @@
+A UTF-8 encoded template file.
+Some accented characters: Äöóéùü
+
+JSON Sample: {{JsonSampleVariable}}
+YAML Sample: {{YamlSampleVariable}}
+Environment PATH: {{EnvironmentPathVariable}}
