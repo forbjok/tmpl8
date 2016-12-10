@@ -159,6 +159,9 @@ class Tmpl8Service {
         auto templateProcessor = new TemplateProcessor();
 
         foreach(tmp; _config.templates) {
+            /* Default to UTF-8 if no encoding is specified. */
+            auto encodingName = !tmp.encoding.empty ? tmp.encoding : "utf-8";
+
             string[] ignoreFiles;
 
             // Locate all matching templates withing the root directory
@@ -177,7 +180,7 @@ class Tmpl8Service {
                 stderr.writeln("Processing template: ", relativeTemplatePath);
 
                 // Process the template
-                templateProcessor.processTemplate(templateFile, outputFile, vars, tmp.encoding);
+                templateProcessor.processTemplate(templateFile, outputFile, vars, encodingName);
 
                 // Add to list of processed template files
                 templateFilesProcessed ~= templateFile;
