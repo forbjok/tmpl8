@@ -1,10 +1,10 @@
 module cli.utils.indentation;
 
-import std.regex : regex, replaceAll;
+import std.regex : ctRegex, replaceAll;
+
+auto ctrLeadingTabs = ctRegex!(`(?<!^)\t`);
 
 string spacify(in string s) {
-    auto re = regex(r"(?<!^)\t");
-
     /* Replace all tabs with 2 spaces. */
-    return replaceAll(s, re, "  ");
+    return replaceAll(s, ctrLeadingTabs, "  ");
 }
