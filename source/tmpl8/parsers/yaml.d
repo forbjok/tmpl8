@@ -2,7 +2,7 @@ module tmpl8.parsers.yaml;
 
 import std.conv : to;
 
-import yamlserialized.deserialization : deserializeInto;
+import yamlserialized : deserializeInto;
 import yaml : Loader;
 
 import tmpl8.parser : Parser;

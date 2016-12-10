@@ -10,7 +10,7 @@ import dyaml.stream : YStream;
 import jsonserialized.serialization : serializeToJSONValue;
 import stdx.data.json : toJSON;
 import yaml : Dumper;
-import yamlserialized.serialization : serializeToYAMLNode;
+import yamlserialized : toYAMLNode;
 
 import cli.command : ICommand, registerCommand;
 import tmpl8.services.tmpl8service : Tmpl8Service;
@@ -84,7 +84,7 @@ class GetCommand : ICommand {
                     break;
                 case "yaml":
                     auto vars = getVariables();
-                    auto node = vars.serializeToYAMLNode();
+                    auto node = vars.toYAMLNode();
 
                     auto dumper = Dumper(new YStdOut());
                     dumper.dump(node);

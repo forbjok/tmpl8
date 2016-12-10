@@ -10,7 +10,7 @@ import jsonserialized.deserialization : deserializeFromJSONValue;
 import stdx.data.json : toJSONValue;
 
 import yaml : Loader;
-import yamlserialized.deserialization : deserializeInto;
+import yamlserialized : deserializeInto;
 
 import tmpl8.config : Config;
 import tmpl8.input : Input;
