@@ -27,6 +27,11 @@ class YStdOut : YStream {
 		return buffer.length;
 	}
 
+    size_t write(const(char)[] str)
+    {
+        return write(cast(const(ubyte)[]) str);
+    }
+
 	void flush() {
 		stdout.flush();
 	}
