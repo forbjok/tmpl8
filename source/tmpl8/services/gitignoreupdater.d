@@ -11,6 +11,24 @@ class GitIgnoreUpdater {
     private const string endComment = "### END TMPL8 ###";
 
     void updateGitIgnore(in string filename, in string[] ignoreFiles) {
+        // Get path of directory containing the .gitignore
+        auto gitIgnorePath = dirName(filename);
+
+        auto relativeIgnoreFiles = ignoreFiles
+            // Make ignore files relative to .gitignore path
+            .map!(f => relativePath(f, gitIgnorePath))
+
+            // Replace all dir separators (which could be backslashes in Windows) with forward-slashes
+            .map!(f => f.replace(dirSeparator, "/"))
+
+            // Make an array of the ignore file lines
+            .array();
+
+        /* If any of the ignored files are outside the .gitignore's directory,
+           as this is not a valid configuration and will not work. */
+        if (relativeIgnoreFiles.any!(f => f.startsWith("../")))
+            throw new Exception("One or more ignored files are outside the directory containing the .gitignore!");
+
         string[] linesBefore;
         string[] linesAfter;
         string[] newBlockLines;
@@ -51,21 +69,8 @@ class GitIgnoreUpdater {
             }
         }
 
-        // Get path of directory containing the .gitignore
-        auto gitIgnorePath = dirName(filename);
-
-        auto ignoreFileLines = ignoreFiles
-            // Make ignore files relative to .gitignore path
-            .map!(f => relativePath(f, gitIgnorePath))
-
-            // Replace all dir separators (which could be backslashes in Windows) with forward-slashes
-            .map!(f => f.replace(dirSeparator, "/"))
-
-            // Append slash to the beginning of the ignore file path to ensure that it only matches the exact file
-            .map!(f => "/" ~ f)
-
-            // Make an array of the ignore file lines
-            .array();
+        // Append slash to the beginning of the ignore file path to ensure that it only matches the exact file
+        auto ignoreFileLines = relativeIgnoreFiles.map!(f => "/" ~ f).array();
 
         newBlockLines ~= [beginComment] ~ ignoreFileLines ~ [endComment];
         auto newLines = (linesBefore ~ newBlockLines ~ linesAfter).join("\n") ~ "\n";

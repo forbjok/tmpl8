@@ -210,9 +210,17 @@ class Tmpl8Service {
             import tmpl8.services.gitignoreupdater : GitIgnoreUpdater;
             auto gitIgnoreUpdater = new GitIgnoreUpdater();
 
+            // Construct the full path to the .gitignore
             auto gitIgnoreFile = buildPath(_rootPath, ugi.gitIgnore);
 
-            gitIgnoreUpdater.updateGitIgnore(gitIgnoreFile, ugi.ignoreFiles);
+            try {
+                // Update the .gitignore file
+                gitIgnoreUpdater.updateGitIgnore(gitIgnoreFile, ugi.ignoreFiles);
+            }
+            catch(Exception ex) {
+                // An error occurred while trying to update the .gitignore file
+                stderr.writeln("Error updating .gitignore: ", ex.msg);
+            }
         }
     }
 }
