@@ -211,12 +211,8 @@ class Tmpl8Service {
             auto gitIgnoreUpdater = new GitIgnoreUpdater();
 
             auto gitIgnoreFile = buildPath(_rootPath, ugi.gitIgnore);
-            auto gitIgnorePath = dirName(gitIgnoreFile);
 
-            // Make ignored files relative to the .gitignore file's path
-            auto ignoreFiles = ugi.ignoreFiles.map!(f => relativePath(f, gitIgnorePath)).array();
-
-            gitIgnoreUpdater.updateGitIgnore(gitIgnoreFile, ignoreFiles);
+            gitIgnoreUpdater.updateGitIgnore(gitIgnoreFile, ugi.ignoreFiles);
         }
     }
 }
