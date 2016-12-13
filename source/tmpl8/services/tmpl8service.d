@@ -170,22 +170,24 @@ class Tmpl8Service {
         string[] defaultIgnoreFiles;
         string[] templateFilesProcessed;
 
-        /* Process templates */
+        // Locate all matching templates withing the root directory
+        auto filesInRootPath = dirEntries(_rootPath, SpanMode.breadth, false)
+            // Only include files
+            .filter!(f => f.isFile)
+            // Store info into TemplateFile struct
+            .map!(f => TemplateFile(f.name, f.name.relativePath(_rootPath).replace(dirSeparator, "/")))
+            .array();
+
         auto templateProcessor = new TemplateProcessor();
 
+        /* Process templates */
         foreach(tmp; _config.templates) {
+            auto templateFiles = filesInRootPath;
+
             /* Default to UTF-8 if no encoding is specified. */
             auto encodingName = !tmp.encoding.empty ? tmp.encoding : "utf-8";
 
             string[] ignoreFiles;
-
-            // Locate all matching templates withing the root directory
-            auto templateFiles = dirEntries(_rootPath, SpanMode.breadth, false)
-                // Only include files
-                .filter!(f => f.isFile)
-                // Store info into TemplateFile struct
-                .map!(f => TemplateFile(f.name, f.name.relativePath(_rootPath).replace(dirSeparator, "/")))
-                .array();
 
             // If a glob is specified, filter the templates by it
             if (!tmp.glob.empty)
