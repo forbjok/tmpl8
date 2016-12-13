@@ -23,6 +23,16 @@ private const tmpl8ConfigFilenames = ["tmpl8.yml", "tmpl8.json"];
 
 class Tmpl8Service {
     private {
+        struct TemplateFile {
+            string path;
+            string invariantPath;
+
+            this(string path, string invariantPath) {
+                this.path = path;
+                this.invariantPath = invariantPath;
+            }
+        }
+
         struct UpdateGitIgnore {
             string gitIgnore;
             string[] ignoreFiles;
@@ -147,6 +157,11 @@ class Tmpl8Service {
     }
 
     void generate() {
+        import std.algorithm : canFind, filter;
+        import std.file : dirEntries, SpanMode;
+        import std.path : dirSeparator, globMatch;
+        import std.string : replace;
+
         // Harvest variables
         auto vars = harvestVariables();
 
@@ -165,25 +180,40 @@ class Tmpl8Service {
             string[] ignoreFiles;
 
             // Locate all matching templates withing the root directory
-            auto fileLocator = new FileLocator();
-            auto templateFiles = fileLocator.locateTemplates(_rootPath, tmp.glob);
+            auto templateFiles = dirEntries(_rootPath, SpanMode.breadth, false)
+                // Only include files
+                .filter!(f => f.isFile)
+                // Store info into TemplateFile struct
+                .map!(f => TemplateFile(f.name, f.name.relativePath(_rootPath).replace(dirSeparator, "/")))
+                .array();
 
-            /* Subtract already processed template files from the located files for this glob
-               to ensure that each template file is only processed once. */
-            auto templateFilesToProcess = setDifference(templateFiles, templateFilesProcessed);
+            // If a glob is specified, filter the templates by it
+            if (!tmp.glob.empty)
+                templateFiles = templateFiles.filter!(f => globMatch(f.invariantPath, tmp.glob)).array();
 
-            foreach(templateFile; templateFilesToProcess) {
+            // If a regex is specified, filter the templates by it
+            if (!tmp.regex.empty) {
+                import std.regex : matchFirst, regex;
+
+                auto re = regex(tmp.regex);
+                templateFiles = templateFiles.filter!(f => matchFirst(f.invariantPath, re)).array();
+            }
+
+            foreach(tf; templateFiles) {
+                // If the template has already been processed, skip it
+                if (templateFilesProcessed.canFind(tf.path))
+                    continue;
+
                 // Get output filename by stripping the template extension
-                auto outputFile = templateFile.stripExtension();
+                auto outputFile = tf.path.stripExtension();
 
-                auto relativeTemplatePath = relativePath(templateFile, _rootPath);
-                stderr.writeln("Processing template: ", relativeTemplatePath);
+                stderr.writeln("Processing template: ", tf.invariantPath);
 
                 // Process the template
-                templateProcessor.processTemplate(templateFile, outputFile, vars, encodingName);
+                templateProcessor.processTemplate(tf.path, outputFile, vars, encodingName);
 
                 // Add to list of processed template files
-                templateFilesProcessed ~= templateFile;
+                templateFilesProcessed ~= tf.path;
 
                 // Add to list of files to ignore
                 ignoreFiles ~= outputFile;

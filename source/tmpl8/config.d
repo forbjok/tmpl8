@@ -18,6 +18,7 @@ struct Config {
 
     struct Template {
         string glob;
+        string regex;
         string encoding;
         string gitIgnore;
     }
