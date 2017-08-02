@@ -9,7 +9,7 @@ import std.path : baseName, buildPath, dirName, extension, getcwd, relativePath,
 import jsonserialized.deserialization : deserializeFromJSONValue;
 import stdx.data.json : toJSONValue;
 
-import yaml : Loader;
+import dyaml : Loader;
 import yamlserialized : deserializeInto;
 
 import tmpl8.config : Config;

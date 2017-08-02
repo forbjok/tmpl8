@@ -9,7 +9,7 @@ import std.string : replace;
 import dyaml.stream : YStream;
 import jsonserialized.serialization : serializeToJSONValue;
 import stdx.data.json : toJSON;
-import yaml : Dumper;
+import dyaml : Dumper;
 import yamlserialized : toYAMLNode;
 
 import cli.command : ICommand, registerCommand;
