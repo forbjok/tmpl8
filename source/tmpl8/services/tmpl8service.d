@@ -3,8 +3,8 @@ module tmpl8.services.tmpl8service;
 import std.algorithm : map, setDifference;
 import std.array : array, empty;
 import std.stdio : stderr;
-import std.file : chdir, readText;
-import std.path : baseName, buildPath, dirName, extension, getcwd, relativePath, stripExtension;
+import std.file : chdir, getcwd, readText;
+import std.path : baseName, buildPath, dirName, extension, relativePath, stripExtension;
 
 import jsonserialized.deserialization : deserializeFromJSONValue;
 import stdx.data.json : toJSONValue;

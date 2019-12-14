@@ -12,7 +12,7 @@ import tmpl8.interfaces : IInput;
 /// stdin input implementation
 class StdinInput : IInput {
     static this() {
-        Input.register("stdin", new this());
+        Input.register("stdin", new typeof(this)());
     }
 
     ubyte[] getData(string[string] parameters) {

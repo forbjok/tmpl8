@@ -9,7 +9,7 @@ import tmpl8.utils.encoding : decode;
 
 class ValueParser : IParser {
     static this() {
-        Parser.register("value", new this());
+        Parser.register("value", new typeof(this)());
     }
 
     /// Parse a UTF-8 encoded byte array of JSON into variables

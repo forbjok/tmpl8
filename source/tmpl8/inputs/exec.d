@@ -10,7 +10,7 @@ import tmpl8.interfaces : IInput;
 /// Execute command input implementation
 class ExecInput : IInput {
     static this() {
-        Input.register("exec", new this());
+        Input.register("exec", new typeof(this)());
     }
 
     ubyte[] getData(string[string] parameters) {

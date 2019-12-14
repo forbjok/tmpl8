@@ -2,7 +2,7 @@ module cli.commands.get;
 
 static import std.getopt;
 
-import std.path : getcwd;
+import std.file : getcwd;
 import std.stdio : stderr, stdout;
 import std.string : replace;
 
@@ -41,7 +41,7 @@ class YStdOut : YStream {
 
 class GetCommand : ICommand {
     static this() {
-        registerCommand("get", new this());
+        registerCommand("get", new typeof(this)());
     }
 
     private void writeUsage(in string command) {

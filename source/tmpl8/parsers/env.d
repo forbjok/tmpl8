@@ -7,7 +7,7 @@ import tmpl8.interfaces : IParser;
 
 class EnvParser : IParser {
     static this() {
-        Parser.register("env", new this());
+        Parser.register("env", new typeof(this)());
     }
 
     /// Return environment variables

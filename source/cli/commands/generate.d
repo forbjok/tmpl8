@@ -1,7 +1,7 @@
 module cli.commands.generate;
 
+import std.file : getcwd;
 import std.getopt : getopt;
-import std.path : getcwd;
 import std.stdio : stderr, writefln, writeln;
 
 import cli.command : ICommand, registerCommand;
@@ -9,7 +9,7 @@ import tmpl8.services.tmpl8service : Tmpl8Service;
 
 class GenerateCommand : ICommand {
     static this() {
-        auto instance = new this();
+        auto instance = new typeof(this)();
 
         registerCommand("generate", instance);
         registerCommand("gen", instance);

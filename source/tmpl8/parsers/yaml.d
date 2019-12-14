@@ -11,7 +11,7 @@ import tmpl8.utils.encoding : decode;
 
 class YamlParser : IParser {
     static this() {
-        Parser.register("yaml", new this());
+        Parser.register("yaml", new typeof(this)());
     }
 
     /// Parse a UTF-8 encoded byte array of YAML into variables

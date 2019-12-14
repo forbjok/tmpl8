@@ -9,7 +9,7 @@ import tmpl8.interfaces : IInput;
 /// File input implementation
 class FileInput : IInput {
     static this() {
-        Input.register("file", new this());
+        Input.register("file", new typeof(this)());
     }
 
     ubyte[] getData(string[string] parameters) {
